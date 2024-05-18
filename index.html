@@ -567,94 +567,85 @@
         </div>
         <!-- fim da Seção de Serviços -->        
         
-        <!-- Coluna 1: Requisição de Análise de Crédito -->
-<div class="col-md-6">
-    <section id="requi" class="requisicoes section-bg">
-        <div class="container">
-            <div class="row align-items-stretch">
-                <!-- Coluna 1: Requisição de Análise de Crédito -->
-                <div class="section-title">
-                    <h2>Requisição de Análise de Crédito</h2>
-                    <p></p>
-                </div>
-                <div class="formulario-modal" id="requisicaoForm">
-                    <form action="php/process.php" method="POST" id="form-requisicao">
-                        <div class="form-group">
-                            <input type="text" class="br form-control" id="nome" name="nome" placeholder="Nome completo" required>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group col-md-4">
-                                <label for="data_nascimento">Data Nascimento:</label>
-                                <input type="date" class="br form-control" id="data_nascimento" placeholder="Data de Nascimento:" name="data_nascimento" required>
-                            </div>
-                            <div class="form-group col-md-4">
-                                <label for="telefone">Telefone:</label>
-                                <input type="tel" class="br form-control" id="telefone" name="telefone" placeholder="Telefone" required maxlength="15">
-                            </div>
-                            <div class="form-group col-md-4">
-                                <label for="email">E-mail:</label>
-                                <input type="email" class="br form-control" id="email" name="email" placeholder="Digite seu E-mail" required>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="horario_contato">Horário para Contato:</label>
-                            <div class="input-group">
-                                <input type="time" class="br form-control" id="horario_contato" name="horario_contato" required>
-                                <div class="input-group-append">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="tipo" class="text-left">Tipo:</label>
-                            <textarea class="br form-control" id="tipo" name="tipo" rows="3" maxlength="250"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label>Categoria:</label><br>
-                            <div class="form-row">
-                                <div class="form-check col-md-3">
-                                    <input class="form-check-input" type="checkbox" id="aposentado" name="categoria[]" value="Aposentado">
-                                    <label class="form-check-label" for="aposentado">Aposentado</label>
-                                </div>
-                                <div class="form-check col-md-3">
-                                    <input class="form-check-input" type="checkbox" id="pensionista" name="categoria[]" value="Pensionista">
-                                    <label class="form-check-label" for="pensionista">Pensionista</label>
-                                </div>
-                                <div class="form-check col-md-3">
-                                    <input class="form-check-input" type="checkbox" id="servidor_publico" name="categoria[]" value="Servidor Público">
-                                    <label class="form-check-label" for="servidor_publico">Servidor Público</label>
-                                </div>
-                                <div class="form-check col-md-3">
-                                    <input class="form-check-input" type="checkbox" id="outros_check" name="categoria[]" value="Outros">
-                                    <label class="form-check-label" for="outros_check">Outros</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group" id="outros_info_div" style="display: none;">
-                            <label for="outros_info">Insira outras informações se necessário:</label>
-                            <input type="text" class="br form-control" id="outros_info" name="outros_info" rows="3" maxlength="200">
-                        </div>
-                        <div class="form-group text-center">
-                            <div class="form-group text-center">
-                                <button type="submit" class="btn btn-primary">
-                                    <div class="br">Enviar Requisição</div>
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div><!-- Fim da coluna Requisição de Análise de Crédito -->
-    </section>
+  <!-- Coluna 1: Requisição de Análise de Crédito -->
+                <div class="col-md-6">
+                    <section id="requi" class="requisicoes section-bg">
+                        <div class="container">
+                            <div class="row align-items-stretch">        
+                                    <!-- Coluna 1: Requisição de Análise de Crédito -->                    
+                                        <div class="section-title">
+                                            <h2>Requisição de Análise de Crédito</h2>
+                                            <p></p>
+                                        </div>
+                                        <div class="formulario-modal" id="requisicaoForm">
+                                            <form action="php/process.php" method="POST" id="form-requisicao">
+                                                <div class="form-group">
+                                                    <input type="text" class="br form-control" id="nome" name="nome" placeholder="Nome completo" required>
+                                                </div>
+                                                <div class="form-row">
+                                                    <div class="form-group col-md-4">
+                                                        <label for="data_nascimento">Data Nascimento:</label>
+                                                        <input type="date" class="br form-control" id="data_nascimento" placeholder="Data de Nascimento:" name="data_nascimento" required>
+                                                    </div>
+                                                    <div class="form-group col-md-4">
+                                                        <label for="telefone">Telefone:</label>
+                                                        <input type="tel" class="br form-control" id="telefone" name="telefone" placeholder="Telefone" required maxlength="15">
+                                                    </div>
+                                                    <div class="form-group col-md-4">
+                                                        <label for="email">E-mail:</label>
+                                                        <input type="email" class="br form-control" id="email" name="email" placeholder="Digite seu E-mail" required>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="horario_contato">Horário para Contato:</label>
+                                                    <div class="input-group">
+                                                        <input type="time" class="br form-control" id="horario_contato" name="horario_contato" required>
+                                                        <div class="input-group-append">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="tipo" class="text-left">Tipo:</label>
+                                                    <textarea class="br form-control" id="tipo" name="tipo" rows="3" maxlength="250"></textarea>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Categoria:</label><br>
+                                                    <div class="form-row">
+                                                        <div class="form-check col-md-3">
+                                                            <input class="form-check-input" type="checkbox" id="aposentado" name="categoria[]" value="Aposentado">
+                                                            <label class="form-check-label" for="aposentado">Aposentado</label>
+                                                        </div>
+                                                        <div class="form-check col-md-3">
+                                                            <input class="form-check-input" type="checkbox" id="pensionista" name="categoria[]" value="Pensionista">
+                                                            <label class="form-check-label" for="pensionista">Pensionista</label>
+                                                        </div>
+                                                        <div class="form-check col-md-3">
+                                                            <input class="form-check-input" type="checkbox" id="servidor_publico" name="categoria[]" value="Servidor Público">
+                                                            <label class="form-check-label" for="servidor_publico">Servidor Público</label>
+                                                        </div>
+                                                        <div class="form-check col-md-3">
+                                                            <input class="form-check-input" type="checkbox" id="outros_check" name="categoria[]" value="Outros">
+                                                            <label class="form-check-label" for="outros_check">Outros</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group" id="outros_info_div" style="display: none;">
+                                                    <label for="outros_info">Insira outras informações se necessário:</label>
+                                                    <input type="text" class="br form-control" id="outros_info" name="outros_info" rows="3" maxlength="200">
+                                                </div>
+                                                <div class="form-group text-center">
+                                                    <div class="form-group text-center">
+                                                        <button type="submit" class="btn btn-primary">
+                                                            <div class="br">Enviar Requisição</div>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div><!-- Fim da coluna Requisição de Análise de Crédito -->
+                   </section>
 </div>
-
-<!-- Adicione este estilo CSS para alinhar corretamente os checkboxes -->
-<style>
-    .form-check {
-        display: flex;
-        align-items: center;
-        margin-bottom: 10px;
-    }
-</style>
 
         
                 <!-- Coluna 2: Dúvidas Frequentes -->
