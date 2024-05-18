@@ -567,96 +567,97 @@
         </div>
         <!-- fim da Seção de Serviços -->        
         
-  <!-- Coluna 1: Requisição de Análise de Crédito -->
+  <div class="container">
+            <div class="row">
+                <!-- Coluna 1: Requisição de Análise de Crédito -->
                 <div class="col-md-6">
                     <section id="requi" class="requisicoes section-bg">
                         <div class="container">
-                            <div class="row align-items-stretch">        
-                                    <!-- Coluna 1: Requisição de Análise de Crédito -->                    
-                                        <div class="section-title">
-                                            <h2>Requisição de Análise de Crédito</h2>
-                                            <p></p>
+                            <div class="row align-items-stretch">
+                                <!-- Coluna 1: Requisição de Análise de Crédito -->
+                                <div class="section-title">
+                                    <h2>Requisição de Análise de Crédito</h2>
+                                    <p></p>
+                                </div>
+                                <div class="formulario-modal" id="requisicaoForm">
+                                    <form action="php/process.php" method="POST" id="form-requisicao">
+                                        <div class="form-group">
+                                            <input type="text" class="br form-control" id="nome" name="nome" placeholder="Nome completo" required>
                                         </div>
-                                        <div class="formulario-modal" id="requisicaoForm">
-                                            <form action="php/process.php" method="POST" id="form-requisicao">
-                                                <div class="form-group">
-                                                    <input type="text" class="br form-control" id="nome" name="nome" placeholder="Nome completo" required>
-                                                </div>
-                                                <div class="form-row">
-                                                    <div class="form-group col-md-4">
-                                                        <label for="data_nascimento">Data Nascimento:</label>
-                                                        <input type="date" class="br form-control" id="data_nascimento" placeholder="Data de Nascimento:" name="data_nascimento" required>
-                                                    </div>
-                                                    <div class="form-group col-md-4">
-                                                        <label for="telefone">Telefone:</label>
-                                                        <input type="tel" class="br form-control" id="telefone" name="telefone" placeholder="Telefone" required maxlength="15">
-                                                    </div>
-                                                    <div class="form-group col-md-4">
-                                                        <label for="email">E-mail:</label>
-                                                        <input type="email" class="br form-control" id="email" name="email" placeholder="Digite seu E-mail" required>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="horario_contato">Horário para Contato:</label>
-                                                    <div class="input-group">
-                                                        <input type="time" class="br form-control" id="horario_contato" name="horario_contato" required>
-                                                        <div class="input-group-append">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label for="tipo" class="text-left">Tipo:</label>
-                                                    <textarea class="br form-control" id="tipo" name="tipo" rows="3" maxlength="250"></textarea>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>Categoria:</label><br>
-                                                    <div class="form-row">
-                                                        <div class="form-check col-md-3">
-                                                            <input class="form-check-input" type="checkbox" id="aposentado" name="categoria[]" value="Aposentado">
-                                                            <label class="form-check-label" for="aposentado">Aposentado</label>
-                                                        </div>
-                                                        <div class="form-check col-md-3">
-                                                            <input class="form-check-input" type="checkbox" id="pensionista" name="categoria[]" value="Pensionista">
-                                                            <label class="form-check-label" for="pensionista">Pensionista</label>
-                                                        </div>
-                                                        <div class="form-check col-md-3">
-                                                            <input class="form-check-input" type="checkbox" id="servidor_publico" name="categoria[]" value="Servidor Público">
-                                                            <label class="form-check-label" for="servidor_publico">Servidor Público</label>
-                                                        </div>
-                                                        <div class="form-check col-md-3">
-                                                            <input class="form-check-input" type="checkbox" id="outros_check" name="categoria[]" value="Outros">
-                                                            <label class="form-check-label" for="outros_check">Outros</label>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group" id="outros_info_div" style="display: none;">
-                                                    <label for="outros_info">Insira outras informações se necessário:</label>
-                                                    <input type="text" class="br form-control" id="outros_info" name="outros_info" rows="3" maxlength="200">
-                                                </div>
-                                                <div class="form-group text-center">
-                                                    <div class="form-group text-center">
-                                                        <button type="submit" class="btn btn-primary">
-                                                            <div class="br">Enviar Requisição</div>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </form>
+                                        <div class="form-row">
+                                            <div class="form-group col-md-4">
+                                                <label for="data_nascimento">Data Nascimento:</label>
+                                                <input type="date" class="br form-control" id="data_nascimento" placeholder="Data de Nascimento:" name="data_nascimento" required>
+                                            </div>
+                                            <div class="form-group col-md-4">
+                                                <label for="telefone">Telefone:</label>
+                                                <input type="tel" class="br form-control" id="telefone" name="telefone" placeholder="Telefone" required maxlength="15">
+                                            </div>
+                                            <div class="form-group col-md-4">
+                                                <label for="email">E-mail:</label>
+                                                <input type="email" class="br form-control" id="email" name="email" placeholder="Digite seu E-mail" required>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div><!-- Fim da coluna Requisição de Análise de Crédito -->
-                   </section>
-</div>
+                                        <div class="form-group">
+                                            <label for="horario_contato">Horário para Contato:</label>
+                                            <div class="input-group">
+                                                <input type="time" class="br form-control" id="horario_contato" name="horario_contato" required>
+                                                <div class="input-group-append">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="tipo" class="text-left">Tipo:</label>
+                                            <textarea class="br form-control" id="tipo" name="tipo" rows="3" maxlength="250"></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Categoria:</label><br>
+                                            <div class="form-row">
+                                                <div class="form-check col-md-3">
+                                                    <input class="form-check-input" type="checkbox" id="aposentado" name="categoria[]" value="Aposentado">
+                                                    <label class="form-check-label" for="aposentado">Aposentado</label>
+                                                </div>
+                                                <div class="form-check col-md-3">
+                                                    <input class="form-check-input" type="checkbox" id="pensionista" name="categoria[]" value="Pensionista">
+                                                    <label class="form-check-label" for="pensionista">Pensionista</label>
+                                                </div>
+                                                <div class="form-check col-md-3">
+                                                    <input class="form-check-input" type="checkbox" id="servidor_publico" name="categoria[]" value="Servidor Público">
+                                                    <label class="form-check-label" for="servidor_publico">Servidor Público</label>
+                                                </div>
+                                                <div class="form-check col-md-3">
+                                                    <input class="form-check-input" type="checkbox" id="outros_check" name="categoria[]" value="Outros">
+                                                    <label class="form-check-label" for="outros_check">Outros</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group" id="outros_info_div" style="display: none;">
+                                            <label for="outros_info">Insira outras informações se necessário:</label>
+                                            <input type="text" class="br form-control" id="outros_info" name="outros_info" rows="3" maxlength="200">
+                                        </div>
+                                        <div class="form-group text-center">
+                                            <div class="form-group text-center">
+                                                <button type="submit" class="btn btn-primary">
+                                                    <div class="br">Enviar Requisição</div>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div><!-- Fim da coluna Requisição de Análise de Crédito -->
+                    </section>
+                </div>
 
-        
                 <!-- Coluna 2: Dúvidas Frequentes -->
                 <div class="col-md-6">
                     <section id="faq" class="faq section-bg">
                         <div class="container" data-aos="fade-up">
-                
+
                             <div class="section-title">
-                                <h2>Dúvidas Frequentes</h2>                    
+                                <h2>Dúvidas Frequentes</h2>
                             </div>
-            
+
                             <div class="faq-list">
                                 <ul>
                                     <li data-aos="fade-up">
@@ -667,7 +668,7 @@
                                             </p>
                                         </div>
                                     </li>
-            
+
                                     <li data-aos="fade-up" data-aos-delay="100">
                                         <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse" data-bs-target="#check2" class="collapsed">Porquê escolher a CONFINTER? <i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
                                         <div id="check2" class="collapse" data-bs-parent=".faq-list">
@@ -676,8 +677,8 @@
                                                 Nossos profissionais são dinâmicos e altamente qualificados, oferecendo suporte eficiente, soluções práticas com foco em resultados.
                                             </p>
                                         </div>
-                                    </li>                        
-            
+                                    </li>
+
                                     <li data-aos="fade-up" data-aos-delay="300">
                                         <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse" data-bs-target="#check3" class="collapsed">O que é empréstimo consignado? <i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
                                         <div id="check3" class="collapse" data-bs-parent=".faq-list">
@@ -687,17 +688,17 @@
                                             </p>
                                         </div>
                                     </li>
-            
+
                                     <li data-aos="fade-up" data-aos-delay="400">
                                         <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse" data-bs-target="#check4" class="collapsed">Quem pode solicitar crédito consignado? <i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
                                         <div id="check4" class="collapse" data-bs-parent=".faq-list">
                                             <p>
                                                 Aqui na CONFINTER, o crédito consignado está disponível para alguns públicos, entre eles:
-                                                                Beneficiário do INSS (BPC/LOAS), Servidores Públicos Municipais, Estaduais e Federais do SIAPE, Militares das Forças Armadas e Aposentados e Pensionistas do INSS.
+                                                Beneficiário do INSS (BPC/LOAS), Servidores Públicos Municipais, Estaduais e Federais do SIAPE, Militares das Forças Armadas e Aposentados e Pensionistas do INSS.
                                             </p>
                                         </div>
                                     </li>
-                                    
+
                                     <li data-aos="fade-up" data-aos-delay="400">
                                         <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse" data-bs-target="#check5" class="collapsed">Quais são as taxas de juros? <i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
                                         <div id="check5" class="collapse" data-bs-parent=".faq-list">
@@ -707,7 +708,7 @@
                                             </p>
                                         </div>
                                     </li>
-            
+
                                     <li data-aos="fade-up" data-aos-delay="400">
                                         <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse" data-bs-target="#check6" class="collapsed">Como é feita a análise de crédito? <i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
                                         <div id="check6" class="collapse" data-bs-parent=".faq-list">
@@ -716,7 +717,7 @@
                                             </p>
                                         </div>
                                     </li>
-            
+
                                     <li data-aos="fade-up" data-aos-delay="400">
                                         <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse" data-bs-target="#check7" class="collapsed">Como a CONFINTER pode me ajudar hoje? <i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
                                         <div id="check7" class="collapse" data-bs-parent=".faq-list">
@@ -726,23 +727,23 @@
                                             </p>
                                         </div>
                                     </li>
-            
+
                                     <li data-aos="fade-up" data-aos-delay="400">
                                         <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse" data-bs-target="#check8" class="collapsed">Como faço para assinar o meu contrato? <i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
                                         <div id="check8" class="collapse" data-bs-parent=".faq-list">
                                             <p>
                                                 A assinatura é de forma digital, podendo ser enviado um link por WhatsApp ou SMS, enviado para o seu número de celular informado no formulário.  A maioria dos bancos exigem:
-                                                                •	o envio do documento de identidade;
-                                                                •	o aceite (SIM) na CCB: essa etapa o cliente verifica se todas as condições contratadas e precisa dar o aceite para seguir para a assinatura;
-                                                                •	tirar uma selfie (foto de si mesmo) que é a etapa de assinatura digital do cliente;
-                                                                Entretanto, essa modalidade pode variar de acordo com as exigências de cada Instituição Financeira.
+                                                •	o envio do documento de identidade;
+                                                •	o aceite (SIM) na CCB: essa etapa o cliente verifica se todas as condições contratadas e precisa dar o aceite para seguir para a assinatura;
+                                                •	tirar uma selfie (foto de si mesmo) que é a etapa de assinatura digital do cliente;
+                                                Entretanto, essa modalidade pode variar de acordo com as exigências de cada Instituição Financeira.
                                             </p>
                                         </div>
                                     </li>
-            
+
                                 </ul>
                             </div>
-            
+
                         </div>
                     </section>
                 </div>
