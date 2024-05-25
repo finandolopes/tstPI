@@ -12,26 +12,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $usuario = $_POST['usuario'];
     $senha = $_POST['senha'];
     $perfil = $_POST['perfil'];
-
+    
     // Verificar se um arquivo de imagem foi enviado
-    if (isset($_FILES['img_perfil']) && $_FILES['img_perfil']['error'] === UPLOAD_ERR_OK) {
+    if(isset($_FILES['img_perfil']) && $_FILES['img_perfil']['error'] === UPLOAD_ERR_OK) {
         $img_perfil_tmp_name = $_FILES['img_perfil']['tmp_name'];
         $img_perfil_name = $_FILES['img_perfil']['name'];
-        $img_perfil_path = '../caminho/para/salvar/' . $img_perfil_name;
-        // Mover o arquivo temporário para o local desejado
-        if (move_uploaded_file($img_perfil_tmp_name, $img_perfil_path)) {
-            $img_perfil = $img_perfil_path;
-        } else {
-            echo "Erro ao salvar a imagem de perfil.";
-            exit();
-        }
+        // Você pode mover o arquivo temporário para o local desejado, por exemplo:
+        // move_uploaded_file($img_perfil_tmp_name, '../caminho/para/salvar/' . $img_perfil_name);
     } else {
         // Se nenhum arquivo de imagem foi enviado, defina $img_perfil como NULL
         $img_perfil = NULL;
     }
-
-    // Gerar o hash da senha
-    $hash_senha = password_hash($senha, PASSWORD_BCRYPT);
 
     // Preparar a consulta SQL de inserção
     $sql = "INSERT INTO usuarios (nome, email, usuario, senha, perfil, img_perfil) VALUES (?, ?, ?, ?, ?, ?)";
@@ -41,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($stmt) {
         // Bind dos parâmetros e execução da consulta
-        $stmt->bind_param("ssssss", $nome, $email, $usuario, $hash_senha, $perfil, $img_perfil);
+        $stmt->bind_param("ssssss", $nome, $email, $usuario, $senha, $perfil, $img_perfil);
         if ($stmt->execute()) {
             // Inserção bem-sucedida
             // Redirecionar o usuário de volta ao formulário de adição de usuário
