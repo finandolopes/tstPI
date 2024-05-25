@@ -1,9 +1,9 @@
-﻿<?php
+<?php
 include_once('../php/conexao.php');
 
 // Consulta SQL para buscar os clientes
 $sql = "SELECT r.id_cliente, c.nome AS nome_cliente, c.email, c.telefone FROM clientes r INNER JOIN clientes c ON r.id_cliente = c.id_cliente";
-$result = $conn->query($sql);
+$result = $conexao->query($sql);
 
 // Verifica se há resultados da consulta
 if ($result->num_rows > 0) {
@@ -21,8 +21,6 @@ if ($result->num_rows > 0) {
     echo "<tr><td colspan='6'>Nenhum cliente encontrado</td></tr>";
 }
 
-// Fecha a conexão com o banco de dados
-$conexao->close();
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -34,8 +32,7 @@ $conexao->close();
     <title>CONFINTER - Painel Administrativo</title>
     <link rel="shortcut icon" type="image/x-icon" href="assets/img/favicon.jpg">
     <link rel="stylesheet" href="assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="assets/css/animate.css">
-    <link rel="stylesheet" href="assets/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="assets/css/animate.css">   
     <link rel="stylesheet" href="assets/plugins/fontawesome/css/fontawesome.min.css">
     <link rel="stylesheet" href="assets/plugins/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="assets/css/style.css">

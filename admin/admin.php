@@ -2,21 +2,106 @@
 session_start();
 include_once('../php/conexao.php');
 
-// Verificação de autenticação
-if (!isset($_SESSION['usuario'])) {
-    header('Location: ../index.php');
+// Verifica se o usuário está logado
+if (!isset($_SESSION['username'])) {
+    header('Location: login.php');
     exit();
 }
 
-// Definição de variáveis e obtenção de dados necessários
-$totalVisitas = 0; // Supondo que esse valor será obtido do banco de dados
-$totalDepoimentos = 0; // Supondo que esse valor será obtido do banco de dados
-$porcentagem_requisicoes_realizadas = 0; // Supondo que esse valor será calculado
-$total_requisicoes_realizadas = 0; // Supondo que esse valor será obtido do banco de dados
-$media_tempo = ''; // Supondo que esse valor será obtido do banco de dados
+// Função para executar uma consulta preparada e retornar o resultado
+function executarConsulta($conexao, $sql, $params = null) {
+    $stmt = $conexao->prepare($sql);
+    if ($params) {
+        $stmt->bind_param(...$params);
+    }
+    if (!$stmt->execute()) {
+        // Tratamento de erro, se a consulta não for bem-sucedida
+        return false;
+    }
+    $result = $stmt->get_result();
+    return $result->fetch_assoc();
+}
 
-// Aqui você deve incluir as consultas para definir os valores acima.
+// Função para contar registros retornados por uma consulta
+function contarRegistros($conexao, $sql, $params = null) {
+    $stmt = $conexao->prepare($sql);
+    if ($params) {
+        $stmt->bind_param(...$params);
+    }
+    if (!$stmt->execute()) {
+        // Tratamento de erro, se a consulta não for bem-sucedida
+        return 0;
+    }
+    $result = $stmt->get_result();
+    return $result->fetch_array()[0];
+}
+
+// Recupera o nome de usuário da sessão
+$username = $_SESSION['username'];
+
+// Consulta o banco de dados para obter informações do usuário
+$sqlUsuario = "SELECT * FROM usuarios WHERE usuario = ?";
+$usuario = executarConsulta($conexao, $sqlUsuario, ['s', $username]);
+
+// Verifica se o usuário foi encontrado
+if ($usuario) {
+    // Use as informações do usuário
+    $nome = htmlspecialchars($usuario['nome']);
+    $email = htmlspecialchars($usuario['email']);
+    // e assim por diante...
+} else {
+    // Trate o caso em que o usuário não foi encontrado
+    $nome = "Usuário Desconhecido";
+    $email = "email@example.com";
+    // ou qualquer valor padrão que você preferir
+}
+
+// Consulta o perfil do usuário
+$sqlPerfilUsuario = "SELECT perfil FROM usuarios WHERE usuario = ?";
+$perfilUsuario = executarConsulta($conexao, $sqlPerfilUsuario, ['s', $username]);
+$perfil_usuario = $perfilUsuario ? $perfilUsuario['perfil'] : "Perfil do Usuário";
+
+// Consulta o número total de visitas
+$sqlTotalVisitas = "SELECT COUNT(*) AS count FROM contador_visitas";
+$totalVisitas = contarRegistros($conexao, $sqlTotalVisitas);
+
+// Consulta o número total de dias
+$sqlTotalDias = "SELECT COUNT(DISTINCT DATE(data_visita)) AS count FROM contador_visitas";
+$totalDias = contarRegistros($conexao, $sqlTotalDias);
+
+// Calcula a porcentagem de visitas
+$porcentagem = $totalDias > 0 ? ($totalVisitas / $totalDias) * 100 : 0;
+
+// Consulta o número total de requisições realizadas
+$sqlTotalRequisicoesRealizadas = "SELECT COUNT(*) AS count FROM requisicoes";
+$totalRequisicoesRealizadas = contarRegistros($conexao, $sqlTotalRequisicoesRealizadas);
+
+// Consulta o número total de clientes
+$sqlTotalClientes = "SELECT COUNT(*) AS count FROM clientes";
+$totalClientes = contarRegistros($conexao, $sqlTotalClientes);
+
+// Calcula a porcentagem de requisições realizadas
+$porcentagemRequisicoes = $totalClientes > 0 ? ($totalRequisicoesRealizadas / $totalClientes) * 100 : 0;
+
+// Formata a porcentagem de requisições
+$porcentagemFormatada = number_format($porcentagemRequisicoes, 1);
+
+// Consulta o número total de depoimentos aprovados
+$sqlTotalDepoimentos = "SELECT COUNT(*) AS count FROM depoimentos WHERE aprovado = 1";
+$totalDepoimentos = contarRegistros($conexao, $sqlTotalDepoimentos);
+
+// Consulta o tempo total das visitas
+$sqlTempoTotalVisitas = "SELECT SEC_TO_TIME(SUM(TIME_TO_SEC(tempo))) AS tempo_total FROM contador_visitas";
+$resultadoTempoTotal = executarConsulta($conexao, $sqlTempoTotalVisitas);
+
+if ($resultadoTempoTotal && isset($resultadoTempoTotal['tempo_total'])) {
+    $tempoTotal = $resultadoTempoTotal['tempo_total'];
+} else {
+    $tempoTotal = '00:00:00';
+}
 ?>
+
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -48,7 +133,7 @@ $media_tempo = ''; // Supondo que esse valor será obtido do banco de dados
             <div class="col-lg-3 col-sm-6 col-12 d-flex">
                 <div class="dash-count">
                     <div class="dash-counts">
-                        <h3 class="rate-percentage"><?php echo htmlspecialchars($totalVisitas); ?></h3>
+                        <h3 class="rate-percentage"><?php echo isset($totalVisitas) ? htmlspecialchars($totalVisitas) : '0'; ?></h3>
                         <h5>Total de Visitas no Site</h5>
                     </div>
                     <div class="dash-imgs">
@@ -62,7 +147,7 @@ $media_tempo = ''; // Supondo que esse valor será obtido do banco de dados
             <div class="col-lg-3 col-sm-6 col-12 d-flex">
                 <div class="dash-count das1">
                     <div class="dash-counts">
-                        <h3 class="rate-percentage"><?php echo htmlspecialchars($totalDepoimentos); ?></h3>
+                        <h3 class="rate-percentage"><?php echo isset($totalDepoimentos) ? htmlspecialchars($totalDepoimentos) : '0'; ?></h3>
                         <h5>Total de Depoimentos no Site</h5>
                     </div>
                     <div class="dash-imgs">
@@ -73,33 +158,33 @@ $media_tempo = ''; // Supondo que esse valor será obtido do banco de dados
             <!-- Fim do bloco de estatísticas: Total de Depoimentos no Site -->
 
             <!-- Bloco de estatísticas: Total de Requisições pelo Site -->
-            <div class="col-lg-3 col-sm-6 col-12 d-flex">
-                <div class="dash-count das2">
-                    <div class="dash-counts">
-                        <h3 class="rate-percentage"><?php echo round($porcentagem_requisicoes_realizadas, 1); ?>%</h3>
-                        <h3 class="rate-percentage"><?php echo htmlspecialchars($total_requisicoes_realizadas); ?></h3>
-                        <h5>Total de Requisições pelo Site</h5>
-                    </div>
-                    <div class="dash-imgs">
-                        <i data-feather="file-text"></i>
-                    </div>
-                </div>
-            </div>
-            <!-- Fim do bloco de estatísticas: Total de Requisições pelo Site -->
+<div class="col-lg-3 col-sm-6 col-12 d-flex">
+    <div class="dash-count das2">
+        <div class="dash-counts">
+            <h3 class="rate-percentage"><?php echo isset($totalRequisicoesRealizadas) ? $totalRequisicoesRealizadas : '0'; ?></h3>
+            <h5>Total de Requisições pelo Site</h5>
+        </div>
+        <div class="dash-imgs">
+            <i data-feather="file-text"></i>
+        </div>
+    </div>
+</div>
+<!-- Fim do bloco de estatísticas: Total de Requisições pelo Site -->
 
-            <!-- Bloco de estatísticas: Total de tempo no Site -->
-            <div class="col-lg-3 col-sm-6 col-12 d-flex">
-                <div class="dash-count das3">
-                    <div class="dash-counts">
-                        <div class="font-weight-semibold"><?php echo htmlspecialchars($media_tempo); ?></div>
-                        <h5>Total de tempo no Site</h5>
-                    </div>
-                    <div class="dash-imgs">
-                        <i data-feather="clock"></i>
-                    </div>
-                </div>
-            </div>
-            <!-- Fim do bloco de estatísticas: Total de tempo no Site -->
+<!-- Bloco de estatísticas: Total de tempo no Site -->
+<div class="col-lg-3 col-sm-6 col-12 d-flex">
+    <div class="dash-count das3">
+        <div class="dash-counts">
+            <div class="font-weight-semibold"><?php echo isset($tempoTotal) ? htmlspecialchars($tempoTotal) : '00:00:00'; ?></div>
+            <h5>Total de tempo no Site</h5>
+        </div>
+        <div class="dash-imgs">
+            <i data-feather="clock"></i>
+        </div>
+    </div>
+</div>
+<!-- Fim do bloco de estatísticas: Total de tempo no Site -->
+
         </div>
         
         <!-- Tabela de dados recentes: Requisições Recentes -->
@@ -126,10 +211,7 @@ $media_tempo = ''; // Supondo que esse valor será obtido do banco de dados
                                     ORDER BY r.data_requisicao DESC
                                     LIMIT 5";
                             // Executa a consulta
-                            $stmt = mysqli_prepare($conexao, $sql);
-                            mysqli_stmt_execute($stmt);
-                            $resultado = mysqli_stmt_get_result($stmt);
-
+                            $resultado = mysqli_query($conexao, $sql);
                             // Verifica se existem resultados
                             if ($resultado && mysqli_num_rows($resultado) > 0) {
                                 // Itera sobre os resultados e exibe os dados

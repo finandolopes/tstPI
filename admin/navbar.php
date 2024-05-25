@@ -1,105 +1,8 @@
 <?php
-// Verifica se a sessão já foi iniciada
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
 include_once('../php/conexao.php');
 
-// Verifica se o usuário está logado
-if (!isset($_SESSION['username'])) {
-    header('Location: login.php');
-    exit();
-}
-
-// Função para executar uma consulta preparada e retornar o resultado
-function executarConsulta($conexao, $sql, $params = null) {
-    $stmt = $conexao->prepare($sql);
-    if ($params) {
-        $stmt->bind_param(...$params);
-    }
-    if (!$stmt->execute()) {
-        // Tratamento de erro, se a consulta não for bem-sucedida
-        return false;
-    }
-    $result = $stmt->get_result();
-    return $result->fetch_assoc();
-}
-
-// Função para contar registros retornados por uma consulta
-function contarRegistros($conexao, $sql, $params = null) {
-    $stmt = $conexao->prepare($sql);
-    if ($params) {
-        $stmt->bind_param(...$params);
-    }
-    if (!$stmt->execute()) {
-        // Tratamento de erro, se a consulta não for bem-sucedida
-        return 0;
-    }
-    $result = $stmt->get_result();
-    return $result->num_rows;
-}
-
-// Recupera o nome de usuário da sessão
-$username = $_SESSION['username'];
-
-// Consulta o banco de dados para obter informações do usuário
-$sqlUsuario = "SELECT * FROM usuarios WHERE usuario = ?";
-$usuario = executarConsulta($conexao, $sqlUsuario, ['s', $username]);
-
-// Verifica se o usuário foi encontrado
-if ($usuario) {
-    // Use as informações do usuário
-    $nome = htmlspecialchars($usuario['nome']);
-    $email = htmlspecialchars($usuario['email']);
-    // e assim por diante...
-} else {
-    // Trate o caso em que o usuário não foi encontrado
-    $nome = "Usuário Desconhecido";
-    $email = "email@example.com";
-    // ou qualquer valor padrão que você preferir
-}
-// Consulta o perfil do usuário
-$sqlPerfilUsuario = "SELECT perfil FROM usuarios WHERE usuario = ?";
-$perfilUsuario = executarConsulta($conexao, $sqlPerfilUsuario, ['s', $username]);
-$perfil_usuario = $perfilUsuario ? $perfilUsuario['perfil'] : "Perfil do Usuário";// Consulta o banco de dados para obter a média de tempo que o visitante fica no site
-$sqlMediaTempo = "SELECT SEC_TO_TIME(AVG(TIME_TO_SEC(tempo))) AS media_tempo FROM contador_visitas";
-$mediaTempo = executarConsulta($conexao, $sqlMediaTempo);
-
-// Consulta o total de visitas
-$sqlTotalVisitas = "SELECT COUNT(*) AS count FROM contador_visitas";
-$totalVisitas = contarRegistros($conexao, $sqlTotalVisitas);
-
-// Consulta o total de dias
-$sqlTotalDias = "SELECT COUNT(DISTINCT DATE(data_visita)) AS count FROM contador_visitas";
-$totalDias = contarRegistros($conexao, $sqlTotalDias);
-
-// Calcula a porcentagem de visitas
-$porcentagem = $totalDias > 0 ? ($totalVisitas / $totalDias) * 100 : 0;
-
-// Consulta o número total de requisições realizadas
-$sqlTotalRequisicoesRealizadas = "SELECT COUNT(*) AS count FROM requisicoes";
-$totalRequisicoesRealizadas = contarRegistros($conexao, $sqlTotalRequisicoesRealizadas);
-
-// Consulta o número total de clientes
-$sqlTotalClientes = "SELECT COUNT(*) AS count FROM clientes";
-$totalClientes = contarRegistros($conexao, $sqlTotalClientes);
-
-// Calcula a porcentagem de requisições realizadas
-$porcentagemRequisicoes = $totalClientes > 0 ? ($totalRequisicoesRealizadas / $totalClientes) * 100 : 0;
-
-// Formata a porcentagem de requisições
-$porcentagemFormatada = number_format($porcentagemRequisicoes, 1);
-
-// Consulta o número total de depoimentos aprovados
-$sqlTotalDepoimentos = "SELECT COUNT(*) AS count FROM depoimentos";
-$totalDepoimentos = contarRegistros($conexao, $sqlTotalDepoimentos);
-
-// Obter o total de depoimentos
-$sqlTotalDepoimentos = "SELECT COUNT(*) AS total_depoimentos FROM depoimentos";
-$totalDepoimentos = executarConsulta($conexao, $sqlTotalDepoimentos);
-$totalDepoimentos = $totalDepoimentos ? $totalDepoimentos['total_depoimentos'] : 0;
 ?>
+
 
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -109,6 +12,9 @@ $totalDepoimentos = $totalDepoimentos ? $totalDepoimentos['total_depoimentos'] :
     <meta name="description" content="CONFINTER - Painel Administrativo">
     <meta name="robots" content="noindex, nofollow">
     <title>CONFINTER - Painel Administrativo</title>
+    <!-- Favicons -->
+    <link href="assets/img/favicon.png" rel="icon">
+    <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
     <link rel="shortcut icon" type="image/x-icon" href="assets/img/favicon.jpg">
     <link rel="stylesheet" href="assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/animate.css">
@@ -124,10 +30,10 @@ $totalDepoimentos = $totalDepoimentos ? $totalDepoimentos['total_depoimentos'] :
     <div class="main-wrapper">
         <div class="header">
             <div class="header-left active">
-                <a href="index.html" class="logo">
+                <a href="admin.php" class="logo">
                     <img src="assets/img/logo.png" alt="">
                 </a>
-                <a href="index.html" class="logo-small">
+                <a href="admin.php" class="logo-small">
                     <img src="assets/img/logo-small.png" alt="">
                 </a>
                 </a>

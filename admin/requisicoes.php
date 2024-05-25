@@ -118,7 +118,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['exportar']) && !empty(
                                             <?php
                                             // Consulta SQL para buscar as requisições
                                             $sql = "SELECT r.id_requisicao, c.nome AS nome_cliente, c.email, c.telefone, r.tipo, r.categoria, r.horario_contato, r.data_requisicao FROM requisicoes r INNER JOIN clientes c ON r.id_cliente = c.id_cliente";
-                                            $result = $conn->query($sql);
+                                            $result = $conexao->query($sql);
 
                                             // Verifica se há resultados da consulta
                                             if ($result->num_rows > 0) {
