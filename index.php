@@ -8,22 +8,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 // Consulta ao banco de dados para recuperar as imagens do carrossel
-$sql = "SELECT * FROM imagens_carrossel";
-$stmt = $conexao->prepare($sql);
+$sqlCarrossel = "SELECT * FROM imagens_carrossel";
+$stmt = $conexao->prepare($sqlCarrossel);
 $stmt->execute();
+$resultCarrossel = $stmt->get_result();
 
-// Verificar se a variável de sessão sucesso_depoimento está definida
-if (isset($_SESSION['sucesso_depoimento']) && $_SESSION['sucesso_depoimento']) {
-    // Exibir a mensagem de sucesso
-    echo "<p class='text-success'>Depoimento enviado com sucesso!</p>";
-    // Remover a variável de sessão para que a mensagem não seja exibida novamente após o próximo carregamento da página
-    unset($_SESSION['sucesso_depoimento']);
+// Processar resultados do carrossel
+$imagensCarrossel = [];
+if ($resultCarrossel->num_rows > 0) {
+    while ($row = $resultCarrossel->fetch_assoc()) {
+        $imagensCarrossel[] = $row;
+    }
+}
+$resultCarrossel->free();
+$stmt->close();
+
+// Função para inserir visita no banco de dados
+function registrarVisita($conexao) {
+    $sql = "INSERT INTO contador_visitas (data_visita) VALUES (CURRENT_TIMESTAMP)";
+    $conexao->query($sql);
 }
 
-// Função para gerar o hash seguro da senha
-function gerarHashSenha($senha) {
-    return password_hash($senha, PASSWORD_DEFAULT);
-}
+// Registrar a visita
+registrarVisita($conexao);
+
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -43,7 +51,7 @@ function gerarHashSenha($senha) {
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
 
-    <!-- Vendor CSS Files -->
+            <!-- Vendor CSS Files -->
 <link href="assets/vendor/aos/aos.css" rel="stylesheet">
 <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
@@ -63,7 +71,6 @@ function gerarHashSenha($senha) {
 
 <!-- Template Main CSS File -->
 <link href="assets/css/style.css" rel="stylesheet">
-
 
     <script>
         $(document).ready(function () {
@@ -261,13 +268,13 @@ function gerarHashSenha($senha) {
 </div>
 <body>
 
-    <!-- ======= Inicio Header ======= -->
+        <!-- ======= Inicio Header ======= -->
     <header id="header" class="fixed-top">
         <div class="container d-flex align-items-center justify-content-between">
 
-            <!--<h1 class="logo"><a href="index.html">CONFINTER</a></h1>-->
+            <!--<h1 class="logo"><a href="index.php">CONFINTER</a></h1>-->
             <!-- Uncomment below if you prefer to use an image logo -->
-            <a href="index.html" class="logo"><img src="assets/img/logo01-black.png" alt="" class="img-fluid"></a>
+            <a href="index.php" class="logo"><img src="assets/img/logo01-black.png" alt="" class="img-fluid"></a>
 
             <nav id="navbar" class="navbar">
                 <ul>
@@ -275,7 +282,7 @@ function gerarHashSenha($senha) {
                     <li><a class="nav-link scrollto" href="#valores">Nossos Valores</a></li>
                     <li><a class="nav-link scrollto" href="#servicos">Serviços</a></li>
                     <li><a class="nav-link scrollto o" href="#requi">Requisições</a></li>
-                    <li><a class="nav-link scrollto" href="#faq">Dúvidas</a></li>
+                    <li><a class="nav-link scrollto" href="#duvidas">Dúvidas</a></li>
                     <li><a class="nav-link scrollto" href="#depoimentos">Depoimentos</a></li>
                     <li><a class="nav-link scrollto" href="#chegar">Como Chegar</a></li>
                     <a class="page-scroll" href="#" data-toggle="modal" data-target="#loginModal">Login</a>
@@ -285,37 +292,38 @@ function gerarHashSenha($senha) {
 
         </div>
     </header><!-- Fim do Header -->
-   <!-- Modal Login -->
-<div id="loginModal" class="modal fade modal-login" role="dialog">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title"></h4>
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <form action="php/processa_login.php" method="POST">
-                            <div class="form-group">
-                                <label for="user">Usuário:</label>
-                                <input type="text" class="form-control" id="user" name="usuario">
-                            </div>
-                            <div class="form-group">
-                                <label for="senha">Senha:</label>
-                                <input type="password" class="form-control" id="senha" name="senha">
-                            </div>
-                            <button type="submit" class="btn btn-primary">Entrar</button>
-                        </form>
-                    </div>
-                    <div class="col-md-6">
-                        <img src="assets/img/logo01-black.png" alt="Imagem de Login" class="img-fluid">
+    <!-- Modal Login -->
+    <div id="loginModal" class="modal fade modal-login" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title"></h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <form action="php/processa_login.php" method="POST">
+                                <div class="form-group">
+                                    <label for="user">Usuário:</label>
+                                    <input type="text" class="form-control" id="user" name="usuario">
+                                </div>
+                                <div class="form-group">
+                                    <label for="senha">Senha:</label>
+                                    <input type="password" class="form-control" id="senha" name="senha">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Entrar</button>
+                            </form>
+
+                        </div>
+                        <div class="col-md-6">
+                            <img src="assets/img/logo01-black.png" alt="Imagem de Login" class="img-fluid">
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
     <!-- ======= Hero Section ======= -->
 <section id="hero" class="d-flex align-items-center">
     <div class="full-site w-100">
@@ -593,18 +601,19 @@ function gerarHashSenha($senha) {
         </div>
         <!-- fim da Seção de Serviços -->
 
+        <div id="requi" class="requisicoes section-bg"></div>
+
         <div class="container">
             <div class="row">
                 <!-- Coluna 1: Requisição de Análise de Crédito -->
-                <div class="col-md-6">
+                <div class="col-md-5">
                     <section id="requi" class="requisicoes section-bg">
                         <div class="container">
                             <div class="row align-items-stretch">
-                                <!-- Coluna 1: Requisição de Análise de Crédito -->
+                                <!-- Conteúdo da Requisição de Análise de Crédito -->
                                 <div class="section-title">
-                                    <h2>Requisição de Análise de Crédito</h2>
-                                    <p></p>
-                                </div>
+            <h2>Requisição de Análise de Crédito</h2>
+        </div>
                                 <div class="formulario-modal" id="requisicaoForm">
                                     <form action="php/process.php" method="POST" id="form-requisicao">
                                         <div class="form-group">
@@ -612,7 +621,7 @@ function gerarHashSenha($senha) {
                                         </div>
                                         <div class="form-row">
                                             <div class="form-group col-md-4">
-                                                <label for="data_nascimento">Data Nascimento:</label>
+                                                <label for="data_nascimento">Data Nasc.:</label>
                                                 <input type="date" class="br form-control" id="data_nascimento" placeholder="Data de Nascimento:" name="data_nascimento" required>
                                             </div>
                                             <div class="form-group col-md-4">
@@ -639,21 +648,29 @@ function gerarHashSenha($senha) {
                                         <div class="form-group">
                                             <label>Categoria:</label><br>
                                             <div class="form-row">
-                                                <div class="form-check col-md-3">
-                                                    <input class="form-check-input" type="checkbox" id="aposentado" name="categoria[]" value="Aposentado">
-                                                    <label class="form-check-label" for="aposentado">Aposentado</label>
+                                                <div class="col-md-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="aposentado" name="categoria[]" value="Aposentado">
+                                                        <label class="form-check-label" for="aposentado" style="font-size: 11px;">Aposentado</label>
+                                                    </div>
                                                 </div>
-                                                <div class="form-check col-md-3">
-                                                    <input class="form-check-input" type="checkbox" id="pensionista" name="categoria[]" value="Pensionista">
-                                                    <label class="form-check-label" for="pensionista">Pensionista</label>
+                                                <div class="col-md-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="pensionista" name="categoria[]" value="Pensionista">
+                                                        <label class="form-check-label" for="pensionista" style="font-size: 11px;">Pensionista</label>
+                                                    </div>
                                                 </div>
-                                                <div class="form-check col-md-3">
-                                                    <input class="form-check-input" type="checkbox" id="servidor_publico" name="categoria[]" value="Servidor Público">
-                                                    <label class="form-check-label" for="servidor_publico">Servidor Público</label>
+                                                <div class="col-md-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="servidor_publico" name="categoria[]" value="Servidor Público">
+                                                        <label class="form-check-label" for="servidor_publico" style="font-size: 11px;">Servidor Público</label>
+                                                    </div>
                                                 </div>
-                                                <div class="form-check col-md-3">
-                                                    <input class="form-check-input" type="checkbox" id="outros_check" name="categoria[]" value="Outros">
-                                                    <label class="form-check-label" for="outros_check">Outros</label>
+                                                <div class="col-md-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="outros_check" name="categoria[]" value="Outros">
+                                                        <label class="form-check-label" for="outros_check" style="font-size: 11px;">Outros</label>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -671,23 +688,22 @@ function gerarHashSenha($senha) {
                                     </form>
                                 </div>
                             </div>
-                        </div><!-- Fim da coluna Requisição de Análise de Crédito -->
+                        </div>
                     </section>
                 </div>
 
                 <!-- Coluna 2: Dúvidas Frequentes -->
-                <div class="col-md-6">
-                    <section id="faq" class="faq section-bg">
+                <div class="col-md-7">
+                    <section id="duvidas" class="faq section-bg">
                         <div class="container" data-aos="fade-up">
-
                             <div class="section-title">
-                                <h2>Dúvidas Frequentes</h2>
-                            </div>
-
-                            <div class="faq-list">
+            <h2>Dúvidas Frequentes</h2>
+        </div>
+                            <div class="faq-list" style="font-size: 14px; height: 100%;">
                                 <ul>
+                                    <!-- Perguntas frequentes -->
                                     <li data-aos="fade-up">
-                                        <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse" class="collapse" data-bs-target="#check1">Em que área a empresa opera? <i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
+                                        <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse" class="collapse" data-bs-target="#check1" style="width: 100%;">Em que área a empresa opera? <i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
                                         <div id="check1" class="collapse show" data-bs-parent=".faq-list">
                                             <p>
                                                 Operamos como prestadores de serviços, há mais de 15 anos nas áreas de Crédito Consignado, Intermediação de Negócios, Consultoria Financeira e Cobranças.
@@ -696,47 +712,43 @@ function gerarHashSenha($senha) {
                                     </li>
 
                                     <li data-aos="fade-up" data-aos-delay="100">
-                                        <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse" data-bs-target="#check2" class="collapsed">Porquê escolher a CONFINTER? <i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
+                                        <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse" data-bs-target="#check2" class="collapsed" style="width: 100%;">Porquê escolher a CONFINTER? <i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
                                         <div id="check2" class="collapse" data-bs-parent=".faq-list">
                                             <p>
-                                                Você terá um atendimento rápido e prático em todo território nacional.
-                                                Nossos profissionais são dinâmicos e altamente qualificados, oferecendo suporte eficiente, soluções práticas com foco em resultados.
+                                                Você terá um atendimento rápido e prático em todo território nacional. Nossos profissionais são dinâmicos e altamente qualificados, oferecendo suporte eficiente, soluções práticas com foco em resultados.
                                             </p>
                                         </div>
                                     </li>
 
                                     <li data-aos="fade-up" data-aos-delay="300">
-                                        <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse" data-bs-target="#check3" class="collapsed">O que é empréstimo consignado? <i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
+                                        <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse" data-bs-target="#check3" class="collapsed" style="width: 100%;">O que é empréstimo consignado? <i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
                                         <div id="check3" class="collapse" data-bs-parent=".faq-list">
                                             <p>
-                                                O consignado é uma modalidade de crédito em que os pagamentos são descontados automaticamente do salário do servidor ou do benefício do INSS do tomador.
-                                                Por conta dessa dinâmica, a taxa de inadimplência é baixa e o risco para os bancos muito pequeno, e é isso que faz com que o crédito consignado tenha uma das menores taxas do mercado.
+                                                O consignado é uma modalidade de crédito em que os pagamentos são descontados automaticamente do salário do servidor ou do benefício do INSS do tomador. Por conta dessa dinâmica, a taxa de inadimplência é baixa e o risco para os bancos muito pequeno, e é isso que faz com que o crédito consignado tenha uma das menores taxas do mercado.
                                             </p>
                                         </div>
                                     </li>
 
                                     <li data-aos="fade-up" data-aos-delay="400">
-                                        <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse" data-bs-target="#check4" class="collapsed">Quem pode solicitar crédito consignado? <i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
+                                        <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse" data-bs-target="#check4" class="collapsed" style="width: 100%;">Quem pode solicitar crédito consignado? <i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
                                         <div id="check4" class="collapse" data-bs-parent=".faq-list">
                                             <p>
-                                                Aqui na CONFINTER, o crédito consignado está disponível para alguns públicos, entre eles:
-                                                Beneficiário do INSS (BPC/LOAS), Servidores Públicos Municipais, Estaduais e Federais do SIAPE, Militares das Forças Armadas e Aposentados e Pensionistas do INSS.
+                                                Aqui na CONFINTER, o crédito consignado está disponível para alguns públicos, entre eles: Beneficiário do INSS (BPC/LOAS), Servidores Públicos Municipais, Estaduais e Federais do SIAPE, Militares das Forças Armadas e Aposentados e Pensionistas do INSS.
                                             </p>
                                         </div>
                                     </li>
 
                                     <li data-aos="fade-up" data-aos-delay="400">
-                                        <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse" data-bs-target="#check5" class="collapsed">Quais são as taxas de juros? <i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
+                                        <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse" data-bs-target="#check5" class="collapsed" style="width: 100%;">Quais são as taxas de juros? <i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
                                         <div id="check5" class="collapse" data-bs-parent=".faq-list">
                                             <p>
-                                                Oferecemos Empréstimo Consignado com taxas personalizadas que podem variar dependendo do tipo de convênio, operação, prazo, valor solicitado e perfil do cliente.
-                                                As taxas de juros máximas são de 1.72% ao mês no empréstimo consignado para aposentado e/ou pensionista do INSS e Beneficiário do INSS (BPC/LOAS); e para Servidores Públicos à partir de 1.93% ao mês.
+                                                Oferecemos Empréstimo Consignado com taxas personalizadas que podem variar dependendo do tipo de convênio, operação, prazo, valor solicitado e perfil do cliente. As taxas de juros máximas são de 1.72% ao mês no empréstimo consignado para aposentado e/ou pensionista do INSS e Beneficiário do INSS (BPC/LOAS); e para Servidores Públicos à partir de 1.93% ao mês.
                                             </p>
                                         </div>
                                     </li>
 
                                     <li data-aos="fade-up" data-aos-delay="400">
-                                        <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse" data-bs-target="#check6" class="collapsed">Como é feita a análise de crédito? <i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
+                                        <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse" data-bs-target="#check6" class="collapsed" style="width: 100%;">Como é feita a análise de crédito? <i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
                                         <div id="check6" class="collapse" data-bs-parent=".faq-list">
                                             <p>
                                                 Prezando sempre pela saúde financeira, optamos pelas melhores estratégias de acordo com a gama de bancos parceiros e financeiras, buscando o melhor custo-benefício para nossos clientes.
@@ -745,46 +757,38 @@ function gerarHashSenha($senha) {
                                     </li>
 
                                     <li data-aos="fade-up" data-aos-delay="400">
-                                        <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse" data-bs-target="#check7" class="collapsed">Como a CONFINTER pode me ajudar hoje? <i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
+                                        <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse" data-bs-target="#check7" class="collapsed" style="width: 100%;">Como a CONFINTER pode me ajudar hoje? <i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
                                         <div id="check7" class="collapse" data-bs-parent=".faq-list">
                                             <p>
-                                                A CONFINTER atua também como Correspondente Digital autorizado pelo Banco Central e pode intermediar operações de crédito ajudando você, consumidor, a escolher as melhores opções de crédito disponíveis para seu perfil.
-                                                Conosco, você não precisa sair de casa ou do trabalho perdendo tempo indo até o banco, enfrentando filas e burocracia! Nós fazemos todo o processo e acompanhamos o seu caso, digitalmente até a liberação do crédito em conta.
+                                                A CONFINTER atua também como Correspondente Digital autorizado pelo Banco Central e pode intermediar operações de crédito ajudando você, consumidor, a escolher as melhores opções de crédito disponíveis para seu perfil. Conosco, você não precisa sair de casa ou do trabalho perdendo tempo indo até o banco, enfrentando filas e burocracia! Nós fazemos todo o processo e acompanhamos o seu caso, digitalmente até a liberação do crédito em conta.
                                             </p>
                                         </div>
                                     </li>
 
                                     <li data-aos="fade-up" data-aos-delay="400">
-                                        <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse" data-bs-target="#check8" class="collapsed">Como faço para assinar o meu contrato? <i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
+                                        <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse" data-bs-target="#check8" class="collapsed" style="width: 100%;">Como faço para assinar o meu contrato? <i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
                                         <div id="check8" class="collapse" data-bs-parent=".faq-list">
                                             <p>
-                                                A assinatura é de forma digital, podendo ser enviado um link por WhatsApp ou SMS, enviado para o seu número de celular informado no formulário.  A maioria dos bancos exigem:
-                                                •	o envio do documento de identidade;
-                                                •	o aceite (SIM) na CCB: essa etapa o cliente verifica se todas as condições contratadas e precisa dar o aceite para seguir para a assinatura;
-                                                •	tirar uma selfie (foto de si mesmo) que é a etapa de assinatura digital do cliente;
-                                                Entretanto, essa modalidade pode variar de acordo com as exigências de cada Instituição Financeira.
+                                                A assinatura é de forma digital, podendo ser enviado um link por WhatsApp ou SMS, enviado para o seu número de celular informado no formulário. A maioria dos bancos exigem: • o envio do documento de identidade; • o aceite (SIM) na CCB: essa etapa o cliente verifica se todas as condições contratadas e precisa dar o aceite para seguir para a assinatura; • tirar uma selfie (foto de si mesmo) que é a etapa de assinatura digital do cliente; Entretanto, essa modalidade pode variar de acordo com as exigências de cada Instituição Financeira.
                                             </p>
                                         </div>
                                     </li>
-
                                 </ul>
                             </div>
-
                         </div>
                     </section>
                 </div>
             </div>
         </div>
 
-
         <!-- ======= Seção Enviar Depoimentos ======= -->
         <section id="envdepoimentos" class="testimonials">
             <div class="container-fluid container-center">
                 <div class="row justify-content-center">
                     <div class="col-md-8 col-sm-8 col-xs-12 text-center">
-                        <div class="section-headline">
-                            <h2 class="br">Enviar Depoimento</h2>
-                        </div>
+                        <div class="section-title">
+            <h2>Enviar Depoimento</h2>
+        </div>
                         <!-- Adicionando um identificador único ao formulário -->
                         <form id="form-depoimento" action="php/enviar_depoimento.php" method="POST">
                             <div class="form-group">
@@ -815,117 +819,68 @@ function gerarHashSenha($senha) {
                     </div>
                 </div>
             </div><!-- Fim Item Depoimentos -->
+           
             <!-- ======= Seção Depoimentos ======= -->
-            <section id="depoimentos" class="testimonials">
-                <div class="container" data-aos="fade-up">
+<section id="depoimentos" class="testimonials">
+    <div class="container" data-aos="fade-up">
 
-                    <div class="section-title">
-                        <h2>Depoimentos</h2>
-                    </div>
+        <div class="section-title">
+            <h2>Depoimentos</h2>
+        </div>
 
-                    <div class="testimonials-slider swiper" data-aos="fade-up" data-aos-delay="100">
-                        <div class="swiper-wrapper">
+        <div class="testimonials-slider swiper" data-aos="fade-up" data-aos-delay="100">
+            <div class="swiper-wrapper">
+                <?php
+                $sql = "SELECT nome, mensagem FROM depoimentos WHERE status_mod = 'aprovado'";
+                $result = mysqli_query($conexao, $sql);
 
-                            <div class="swiper-slide">
-                                <div class="testimonial-item">
-                                    <p>
-                                        <i class="bx bxs-quote-alt-left quote-icon-left"></i>
-                                        Proin iaculis purus consequat sem cure digni ssim donec porttitora entum suscipit rhoncus. Accusantium quam, ultricies eget id, aliquam eget nibh et. Maecen aliquam, risus at semper.
-                                        <i class="bx bxs-quote-alt-right quote-icon-right"></i>
-                                    </p>
-                                    <h3>Saul Goodman</h3>
-                                </div>
-                            </div><!-- Fim Item Depoimentos -->
-
-                            <div class="swiper-slide">
-                                <div class="testimonial-item">
-                                    <p>
-                                        <i class="bx bxs-quote-alt-left quote-icon-left"></i>
-                                        Export tempor illum tamen malis malis eram quae irure esse labore quem cillum quid cillum eram malis quorum velit fore eram velit sunt aliqua noster fugiat irure amet legam anim culpa.
-                                        <i class="bx bxs-quote-alt-right quote-icon-right"></i>
-                                    </p>
-                                    <h3>Sara Wilsson</h3>
-                                </div>
-                            </div><!-- Fim Item Depoimentos -->
-
-                            <div class="swiper-slide">
-                                <div class="testimonial-item">
-                                    <p>
-                                        <i class="bx bxs-quote-alt-left quote-icon-left"></i>
-                                        Enim nisi quem export duis labore cillum quae magna enim sint quorum nulla quem veniam duis minim tempor labore quem eram duis noster aute amet eram fore quis sint minim.
-                                        <i class="bx bxs-quote-alt-right quote-icon-right"></i>
-                                    </p>
-                                    <h3>Jena Karlis</h3>
-                                </div>
-                            </div><!-- Fim Item Depoimentos -->
-
-                            <div class="swiper-slide">
-                                <div class="testimonial-item">
-                                    <p>
-                                        <i class="bx bxs-quote-alt-left quote-icon-left"></i>
-                                        Fugiat enim eram quae cillum dolore dolor amet nulla culpa multos export minim fugiat minim velit minim dolor enim duis veniam ipsum anim magna sunt elit fore quem dolore labore illum veniam.
-                                        <i class="bx bxs-quote-alt-right quote-icon-right"></i>
-                                    </p>
-                                    <h3>Matt Brandon</h3>
-                                </div>
-                            </div><!-- Fim Item Depoimentos -->
-
-                            <div class="swiper-slide">
-                                <div class="testimonial-item">
-                                    <p>
-                                        <i class="bx bxs-quote-alt-left quote-icon-left"></i>
-                                        Quis quorum aliqua sint quem legam fore sunt eram irure aliqua veniam tempor noster veniam enim culpa labore duis sunt culpa nulla illum cillum fugiat legam esse veniam culpa fore nisi cillum quid.
-                                        <i class="bx bxs-quote-alt-right quote-icon-right"></i>
-                                    </p>
-                                    <h3>John Larson</h3>
-                                </div>
-                            </div><!-- Fim Seção Depoimentos-->
-
-                        </div>
-                        <div class="swiper-pagination"></div>
-                    </div>
-
-                </div>
-            </section><!-- Fim Seção Depoimentos -->
-            <!-- ======= Seção Contato ======= -->
-            <section id="chegar" class="contact">
-                <div class="container" data-aos="fade-up">
-
-                    <div class="section-title">
-                        <h2>Contato</h2>
-                    </div>
-
-                    <div>
-                        <iframe style="border:0; width: 100%; height: 270px;" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3657.674620432733!2d-46.34657878502169!3d-23.529135784679013!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94ce43de0d92a6f5%3A0x8f85eeb0c19e3c32!2sMarina%20La%20Regina!5e0!3m2!1sen!2sus!4v1648523258379!5m2!1sen!2sus&hl=pt-BR" frameborder="0" allowfullscreen></iframe>
-                    </div>
-
-                    <div class="row mt-5">
-
-                        <div class="col-lg-4">
-                            <div class="info">
-                                <div class="address">
-                                    <i class="bi bi-geo-alt"></i>
-                                    <h4>Localização:</h4>
-                                    <p>Rua Marina La Regina, Centro, Poá</p>
-                                </div>
-
-                                <div class="email">
-                                    <i class="bi bi-envelope"></i>
-                                    <h4>E-mail:</h4>
-                                    <p>contato@confirnter.com.br</p>
-                                </div>
-
-                                <div class="phone">
-                                    <i class="bi bi-phone"></i>
-                                    <h4>Telefone:</h4>
-                                    <p>(11)</p>
-                                </div>
-
+                if (mysqli_num_rows($result) > 0) {
+                    while ($row = mysqli_fetch_assoc($result)) {
+                        $nome = $row['nome'] ? $row['nome'] : "Anônimo";
+                        $mensagem = $row['mensagem'];
+                ?>
+                        <div class="swiper-slide">
+                            <div class="testimonial-item">
+                                <p>
+                                    <i class="bx bxs-quote-alt-left quote-icon-left"></i>
+                                    <?php echo $mensagem; ?>
+                                    <i class="bx bxs-quote-alt-right quote-icon-right"></i>
+                                </p>
+                                <h3><?php echo $nome; ?></h3>
                             </div>
+                        </div><!-- Fim Item Depoimentos -->
+                <?php
+                    }
+                } else {
+                    echo "<div class='swiper-slide'><div class='testimonial-item'><p>Nenhum depoimento aprovado disponível.</p></div></div>";
+                }
+                ?>
+            </div>
+            <div class="swiper-pagination"></div>
+        </div>
 
+    </div>
+</section><!-- Fim Seção Depoimentos -->
+
+           <!-- ======= Seção Contato ======= -->
+        <section id="chegar" class="contact">
+            <div class="container" data-aos="fade-up">
+
+                <div class="section-headline text-center">
+                    <h2 class="br">Como Chegar</h2>                  
+                </div>
+
+                <div>
+                    <iframe style="border:0; width: 100%; height: 270px;" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3657.674620432733!2d-46.34657878502169!3d-23.529135784679013!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94ce43de0d92a6f5%3A0x8f85eeb0c19e3c32!2sMarina%20La%20Regina!5e0!3m2!1sen!2sus!4v1648523258379!5m2!1sen!2sus&hl=pt-BR" frameborder="0" allowfullscreen></iframe>                    
+                </div>
+
+                <div class="row mt-5">
+                    
                         </div>
-                        
-            </section><!-- Fim da Seção de Contato -->
+
+                    </div>
+                   
+        </section><!-- Fim da Seção de Contato -->
 
     </main><!-- Fim #main -->
     <!-- ======= Inicio do Footer ======= -->
@@ -936,26 +891,22 @@ function gerarHashSenha($senha) {
                 <div class="row">
 
                     <div class="col-lg-3 col-md-6 footer-contact">
-                        <h3>CONFINTER</h3>
-                        <p>
-                            Rua Marina La Regina<br>
-                            Poá, Centro<br>
-                            São Paulo <br><br>
-                            <strong>Telefone:</strong>(11)<br>
-                            <strong>E-mail:</strong>contato@confinter.com.br<br>
-                        </p>
+			    <img src="assets/img/logo01-black.png" alt="logo" width="125px">
+                       <h4 class="br">Consultoria Financeira<br /><spam class="number-sequence"></spam></h4>
+                       <h5 class="br"><br /></h5>
+                        
                     </div>
 
                     <div class="col-lg-2 col-md-6 footer-links">
                         <h4>Links Úteis</h4>
                         <ul>
-                            <li><i class="bx bx-chevron-right"></i> <a href="#">Sobre</a></li>
-                            <li><i class="bx bx-chevron-right"></i> <a href="#">Nossos Valores</a></li>
-                            <li><i class="bx bx-chevron-right"></i> <a href="#">Serviços</a></li>
-                            <li><i class="bx bx-chevron-right"></i> <a href="#">Requisições</a></li>
-                            <li><i class="bx bx-chevron-right"></i> <a href="#">Dúvidas</a></li>
-                            <li><i class="bx bx-chevron-right"></i> <a href="#">Depoimentos</a></li>
-                            <li><i class="bx bx-chevron-right"></i> <a href="#">Como Chegar</a></li>
+                            <li><i class="bx bx-chevron-right"></i> <a href="#sobre">Sobre</a></li>
+                            <li><i class="bx bx-chevron-right"></i> <a href="#valores">Nossos Valores</a></li>
+                            <li><i class="bx bx-chevron-right"></i> <a href="#servicos">Serviços</a></li>
+                            <li><i class="bx bx-chevron-right"></i> <a href="#requi">Requisições</a></li>
+                            <li><i class="bx bx-question-mark"></i> <a href="#duvidas">Dúvidas</a></li>
+                            <li><i class="bx bx-highlight"></i> <a href="#depoimentos">Depoimentos</a></li>
+                            <li><i class="bx bx-map"></i> <a href="#chegar">Como Chegar</a></li>
                         </ul>
                     </div>
 
@@ -963,9 +914,7 @@ function gerarHashSenha($senha) {
                         <h4></h4>
                         <ul>
                             <li><i class="bx bx-phone-outgoing"></i> <a href="#">(11)94801-6298</a></li>
-                            <li><i class="bx bx-mail-send"></i> <a href="#">contato@confinter.com.br</a></li>
-                            <li><i class="bx bx-instagram"></i> <a href="https://www.instagram.com/confintersp?igsh=a3NuaGJrem5pYzZu">Instagram</a></li>   
-                            
+                            <li><i class="bx bx-mail-send"></i> <a href="#">contato@confinter.com.br</a></li>                                                  
                         </ul>
                     </div>
 
@@ -973,7 +922,7 @@ function gerarHashSenha($senha) {
                         <h4>Para Informações</h4>
                         <p>Cadastre seu E-mail</p>
                         <form action="" method="post">
-                            <input type="email" name="email"><input type="submit" value="Inscreva-se">
+                            <input type="email" name="email"><input class="btn-primary" type="submit" value="Inscreva-se">
                         </form>
                     </div>
 
@@ -990,16 +939,14 @@ function gerarHashSenha($senha) {
                 <div class="credits">
                     Desenvolvido por <a href="https://github.com/finandolopes/DRP01-PJI110-SALA-007GRUPO-017/tree/main">DRP01-PJI110-SALA-007GRUPO-017</a> com <a href="https://bootstrapmade.com/">BootstrapMade</a>
                 </div>
-            </div>
+            </div>            
         </div>
     </footer><!-- Fim Footer -->
 
     <div id="preloader"></div>
     <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
-    <main id="main"></main>
-
-<!-- Vendor JS Files -->
+    <!-- Vendor JS Files -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
 <script src="assets/vendor/aos/aos.js"></script>
