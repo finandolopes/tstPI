@@ -4,6 +4,7 @@
 
 ## 📋 Índice
 - [Link do projeto:](http://www.confinter.rf.gd/)
+- [Link II - Github apenas para visualizar em HTML:] (https://finandolopes.github.io/tstPI/)
 
 - [📖 Sobre](#-Sobre)
 - [🚀 Tecnologias utilizadas](#-Tecnologias-utilizadas)
