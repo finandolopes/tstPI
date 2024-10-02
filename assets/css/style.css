@@ -1933,44 +1933,60 @@ right: 20px;
 color: #D44638; /* Cor vermelha do logo do Instagram, por exemplo */
 }
 
+ /* Estilo dos botões flutuantes */
+.floating-buttons {
+  position: fixed;
+  top: 50%;
+  left: 0; /* Centraliza os botões na lateral esquerda */
+  transform: translateY(-50%);
+  z-index: 1001; /* Garante que os botões sobreponham outros elementos */
+}
+
+.floating-buttons a {
+  display: flex; /* Usando flex para alinhar ícone verticalmente */
+  justify-content: center; /* Alinhando ícone horizontalmente */
+  align-items: center; /* Alinhando ícone verticalmente */
+  margin-bottom: 10px;
+  width: 40px; /* Definindo a largura dos botões */
+  height: 40px; /* Definindo a altura dos botões */
+  background-color: rgba(252, 249, 249, 0); /* Adicionando um fundo semi-transparente */
+  border-radius: 50%; /* Tornando o botão redondo */
+  text-decoration: none;
+  transition: background 0.3s ease;
+  color: white; /* Cor do ícone */
+}
+
+.floating-buttons a:hover {
+  opacity: 0.8; /* Efeito ao passar o mouse */
+}
+
+/* Estilo do ícone do Instagram */
+.instagram i {
+  color: #D44638; /* Cor vermelha do logo do Instagram */
+}
+
 /* Estilo do ícone do WhatsApp */
 .whatsapp i {
-color: #25D366; /* Cor verde do logo do WhatsApp */
+  color: #25D366; /* Cor verde do logo do WhatsApp */
 }
 
 /* Estilo do ícone do Email */
 .email i {
-color: #4285F4; /* Cor azul do logo do Gmail, por exemplo */
+  color: #4285F4; /* Cor azul do logo do Gmail */
 }
 
 /* Estilo do ícone do GPS */
 .gps i {
-color: #4285F4; /* Cor azul do logo do Google Maps */
+  color: #4285F4; /* Cor azul do logo do Google Maps */
 }
 
-.floating-buttons a {
-display: block;
-margin-bottom: 10px;
-width: 40px;
-height: 40px;
-line-height: 40px;
-text-align: center;
-background-color: #fff; /* Fundo branco para todos os ícones */
-border-radius: 50%;
-text-decoration: none;
-box-shadow: 0 2px 4px 0 rgba(0,0,0,0.2); /* Sombra para destacar os ícones */
-}
-
-.floating-buttons a:hover {
-opacity: 0.8; /* Efeito ao passar o mouse */
-}
 /* Aumentando o tamanho dos ícones */
 .instagram i,
 .whatsapp i,
 .email i,
 .gps i {
-font-size: 30px; /* Ajuste o tamanho dos ícones conforme necessário */
-line-height: 40px; /* Alinhamento vertical dos ícones */
+  font-size: 30px; /* Ajuste o tamanho dos ícones conforme necessário */
+  line-height: 40px; /* Alinhamento vertical dos ícones */
 }
 
 
